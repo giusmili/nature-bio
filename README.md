@@ -1,12 +1,6 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
 
-# Run and deploy your AI Studio app
-
-This contains everything you need to run your app locally.
-
-View your app in AI Studio: https://ai.studio/apps/drive/1nkBkUcFHNuR1UppsEXWfHk6ca9jhSkNK
+# Application dédié aux soins de nos plantes
+>Projet d’application capable d’identifier l’espèce d’une plante, d’évaluer son état de santé à partir d’une photo et de fournir des conseils et traitements adaptés. L’application doit fonctionner sur mobile et ordinateur ; elle utilise Next.js pour le développement web et fait appel à des modèles d’apprentissage automatique pour la classification d’images.
 
 ## Run Locally
 
@@ -15,6 +9,6 @@ View your app in AI Studio: https://ai.studio/apps/drive/1nkBkUcFHNuR1UppsEXWfHk
 
 1. Install dependencies:
    `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+2. Optionally set your Gemini key in [.env.local](.env.local): `VITE_GEMINI_API_KEY=your_key_here` (the app also accepts `GEMINI_API_KEY` for backward compatibility). Without a key the app will return a mock analysis.
 3. Run the app:
    `npm run dev`

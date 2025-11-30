@@ -30,7 +30,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ data, image, onReset, t }) 
   const isSick = data.healthStatus === HealthStatus.SICK;
 
   // Prepare share text
-  const shareText = `I just analyzed my ${data.commonName} with BotanAI! Diagnosis: ${data.diagnosis} (${data.healthStatus}). 🌿🔍 #BotanAI #PlantHealth`;
+  const shareText = `I just analyzed my ${data.commonName} with BotanAI! Diagnosis: ${data.diagnosis} (${data.healthStatus}). #BotanAI #PlantHealth`;
   const shareUrl = window.location.href; // In a real app, this would be a unique link to the result
 
   const handleShare = (platform: 'twitter' | 'facebook' | 'linkedin' | 'copy') => {
@@ -176,6 +176,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ data, image, onReset, t }) 
 
       <div className="flex flex-col items-center gap-6">
         <button 
+            type="button"
             onClick={onReset}
             className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white rounded-full font-semibold shadow-lg transform transition hover:scale-105 active:scale-95 flex items-center gap-2"
         >
@@ -186,25 +187,29 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ data, image, onReset, t }) 
         <div className="text-center">
             <p className="text-sm font-medium text-gray-500 mb-3 uppercase tracking-wider">{t('share_result')}</p>
             <div className="flex items-center justify-center gap-3">
-                <button 
+                <button aria-label="Share on Facebook"
+                    type="button"
                     onClick={() => handleShare('facebook')}
                     className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center shadow hover:bg-blue-700 transition"
                 >
                     <FacebookIcon className="w-5 h-5" />
                 </button>
-                <button 
+                <button aria-label="Share on Twitter"
+                    type="button"
                     onClick={() => handleShare('twitter')}
                     className="w-10 h-10 bg-sky-500 text-white rounded-full flex items-center justify-center shadow hover:bg-sky-600 transition"
                 >
                     <TwitterIcon className="w-5 h-5" />
                 </button>
-                <button 
+                <button aria-label="Share on LinkedIn"
+                    type="button"
                     onClick={() => handleShare('linkedin')}
                     className="w-10 h-10 bg-blue-700 text-white rounded-full flex items-center justify-center shadow hover:bg-blue-800 transition"
                 >
                     <LinkedInIcon className="w-5 h-5" />
                 </button>
-                <button 
+                <button aria-label="Copy link"
+                    type="button"
                     onClick={() => handleShare('copy')}
                     className="w-10 h-10 bg-gray-700 text-white rounded-full flex items-center justify-center shadow hover:bg-gray-800 transition relative"
                 >

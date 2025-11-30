@@ -2,9 +2,41 @@
 import { GoogleGenAI, Type, Schema } from "@google/genai";
 import { PlantAnalysis, HealthStatus, Language } from "../types";
 
-// Initialize the client
-// The API key is injected via the environment variable process.env.API_KEY
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const apiKey =
+  (import.meta as any).env?.VITE_GEMINI_API_KEY ||
+  process.env.GEMINI_API_KEY ||
+  process.env.API_KEY;
+
+// Initialize the client only if we have a key
+const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
+
+const buildMockAnalysis = (language: Language = "en"): PlantAnalysis => {
+  const isFr = language === "fr";
+  return {
+    id: crypto.randomUUID(),
+    timestamp: Date.now(),
+    scientificName: "Epipremnum aureum",
+    commonName: isFr ? "Pothos doré" : "Golden pothos",
+    confidence: 0.92,
+    healthStatus: HealthStatus.HEALTHY,
+    diagnosis: isFr ? "Plante en bonne santé" : "Plant appears healthy",
+    symptoms: isFr ? ["Aucun symptôme visible"] : ["No visible stress"],
+    treatment: isFr
+      ? ["Pas de traitement nécessaire"]
+      : ["No treatment required"],
+    careInstructions: {
+      water: isFr
+        ? "Arroser quand le premier cm de terre est sec"
+        : "Water when top inch of soil is dry",
+      light: isFr ? "Lumière indirecte vive" : "Bright, indirect light",
+      temperature: isFr ? "18-27°C" : "65-80°F",
+      humidity: isFr ? "Humidité modérée" : "Moderate humidity",
+    },
+    funFact: isFr
+      ? "Le pothos est un purificateur d'air populaire et très tolérant."
+      : "Pothos is a popular, forgiving air-purifying houseplant.",
+  };
+};
 
 const plantSchema: Schema = {
   type: Type.OBJECT,
@@ -51,6 +83,13 @@ export const analyzePlantImage = async (base64Image: string, language: Language 
     const langInstruction = language === 'fr' 
       ? "Analyze in French. Return JSON string values in French (commonName, diagnosis, symptoms, treatment, careInstructions, funFact), EXCEPT for 'healthStatus' which MUST strictly be one of ['Healthy', 'Sick', 'Unknown'] (do not translate the enum value)." 
       : "Analyze in English.";
+
+    if (!ai) {
+      console.warn(
+        "Gemini API key is missing; returning mock analysis instead of calling the API."
+      );
+      return buildMockAnalysis(language);
+    }
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",

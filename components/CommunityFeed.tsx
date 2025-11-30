@@ -31,7 +31,7 @@ const POSTS_EN: Post[] = [
     id: 'p1',
     userId: 'u1',
     user: INITIAL_USERS['u1'],
-    content: 'Tip of the day: Overwatering is the #1 killer of houseplants! Always check the top inch of soil before watering again. 💧 #PlantTips #ExpertAdvice',
+    content: 'Tip of the day: Overwatering is the #1 killer of houseplants! Always check the top inch of soil before watering again. [water]  #PlantTips #ExpertAdvice',
     likes: 124,
     isLiked: false,
     comments: [
@@ -45,7 +45,7 @@ const POSTS_EN: Post[] = [
     id: 'p2',
     userId: 'u2',
     user: INITIAL_USERS['u2'],
-    content: 'My Monstera got a new leaf today! Look at those fenestrations. 😍',
+    content: 'My Monstera got a new leaf today! Look at those fenestrations. :)',
     image: 'https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&q=80&w=600',
     likes: 45,
     isLiked: true,
@@ -57,7 +57,7 @@ const POSTS_EN: Post[] = [
     id: 'p3',
     userId: 'u3',
     user: INITIAL_USERS['u3'],
-    content: 'Help! Why are the tips of my spider plant turning brown? I use tap water. 🤔',
+    content: 'Help! Why are the tips of my spider plant turning brown? I use tap water. ?',
     likes: 2,
     isLiked: false,
     comments: [
@@ -73,11 +73,11 @@ const POSTS_FR: Post[] = [
     id: 'p1',
     userId: 'u1',
     user: INITIAL_USERS['u1'],
-    content: 'Astuce du jour : Le sur-arrosage est la cause n°1 de mortalité des plantes d\'intérieur ! Vérifiez toujours le premier centimètre de terre avant d\'arroser à nouveau. 💧 #ConseilPlante #Expert',
+    content: 'Astuce du jour : Le sur-arrosage est la cause no.1 de mortalite des plantes d interieur ! Verifiez toujours le premier centimetre de terre avant d arroser a nouveau. [water]  #ConseilPlante #Expert',
     likes: 124,
     isLiked: false,
     comments: [
-      { id: 'c1', userId: 'u2', user: INITIAL_USERS['u2'], text: 'Ça a sauvé mon pothos ! Merci doc.', timestamp: Date.now() - 3600000 }
+      { id: 'c1', userId: 'u2', user: INITIAL_USERS['u2'], text: 'Ca a sauve mon pothos ! Merci doc.', timestamp: Date.now() - 3600000 }
     ],
     timestamp: Date.now() - 86400000,
     tags: ['PlantTips', 'ExpertAdvice'],
@@ -87,7 +87,7 @@ const POSTS_FR: Post[] = [
     id: 'p2',
     userId: 'u2',
     user: INITIAL_USERS['u2'],
-    content: 'Mon Monstera a fait une nouvelle feuille aujourd\'hui ! Regardez ces fenestrations. 😍',
+    content: 'Mon Monstera a fait une nouvelle feuille aujourd\'hui ! Regardez ces fenestrations. :)',
     image: 'https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&q=80&w=600',
     likes: 45,
     isLiked: true,
@@ -99,11 +99,11 @@ const POSTS_FR: Post[] = [
     id: 'p3',
     userId: 'u3',
     user: INITIAL_USERS['u3'],
-    content: 'A l\'aide ! Pourquoi les pointes de ma plante araignée deviennent brunes ? J\'utilise de l\'eau du robinet. 🤔',
+    content: 'A l aide ! Pourquoi les pointes de ma plante araignee deviennent brunes ? J utilise de l eau du robinet. ?',
     likes: 2,
     isLiked: false,
     comments: [
-      { id: 'c2', userId: 'u1', user: INITIAL_USERS['u1'], text: 'Les plantes araignées sont sensibles au fluorure de l\'eau du robinet. Essayez l\'eau distillée ou l\'eau de pluie !', timestamp: Date.now() - 1800000 }
+      { id: 'c2', userId: 'u1', user: INITIAL_USERS['u1'], text: 'Les plantes araignees sont sensibles au fluorure de l eau du robinet. Essayez l eau distillee ou l eau de pluie !', timestamp: Date.now() - 1800000 }
     ],
     timestamp: Date.now() - 3600000,
     tags: ['Help', 'SpiderPlant'],
@@ -242,6 +242,7 @@ export const CommunityFeed: React.FC<CommunityFeedProps> = ({ lang, t }) => {
         <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-gray-600">{t('mod_mode')}</span>
             <button 
+                type="button"
                 onClick={() => setIsModMode(!isModMode)}
                 className={`w-12 h-6 rounded-full transition-colors relative ${isModMode ? 'bg-green-600' : 'bg-gray-300'}`}
             >
@@ -267,7 +268,8 @@ export const CommunityFeed: React.FC<CommunityFeedProps> = ({ lang, t }) => {
             {newPostImage && (
               <div className="relative mt-2 inline-block">
                 <img src={newPostImage} alt="Preview" className="h-32 rounded-lg object-cover border border-gray-200" />
-                <button 
+                <button aria-label="Remove image"
+                  type="button"
                   onClick={() => setNewPostImage(null)}
                   className="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow-md text-red-500 hover:text-red-700"
                 >
@@ -283,7 +285,8 @@ export const CommunityFeed: React.FC<CommunityFeedProps> = ({ lang, t }) => {
                 <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
               </label>
 
-              <button 
+              <button aria-label="Post"
+                type="button"
                 onClick={handleCreatePost}
                 disabled={!newPostContent.trim()}
                 className="bg-green-600 text-white px-6 py-2 rounded-full font-medium shadow-sm hover:shadow-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
@@ -329,6 +332,7 @@ export const CommunityFeed: React.FC<CommunityFeedProps> = ({ lang, t }) => {
                 {isModMode && (
                   <div className="flex gap-2">
                     <button 
+                        type="button"
                         onClick={() => handlePin(post.id)}
                         className={`p-1.5 rounded-full hover:bg-gray-100 ${post.isPinned ? 'text-green-600' : 'text-gray-400'}`}
                         title="Pin Post"
@@ -336,6 +340,7 @@ export const CommunityFeed: React.FC<CommunityFeedProps> = ({ lang, t }) => {
                         <PinIcon className="w-5 h-5" filled={post.isPinned} />
                     </button>
                     <button 
+                        type="button"
                         onClick={() => handleDelete(post.id)}
                         className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full"
                         title="Delete Post"
@@ -358,6 +363,7 @@ export const CommunityFeed: React.FC<CommunityFeedProps> = ({ lang, t }) => {
               {/* Footer Actions */}
               <div className="flex items-center gap-6 pt-3 border-t border-gray-50">
                 <button 
+                  type="button"
                   onClick={() => handleLike(post.id)}
                   className={`flex items-center gap-1.5 text-sm font-medium transition-colors ${post.isLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}`}
                 >
@@ -366,6 +372,7 @@ export const CommunityFeed: React.FC<CommunityFeedProps> = ({ lang, t }) => {
                 </button>
                 
                 <button 
+                  type="button"
                   onClick={() => setExpandedPostId(expandedPostId === post.id ? null : post.id)}
                   className={`flex items-center gap-1.5 text-sm font-medium transition-colors ${expandedPostId === post.id ? 'text-green-600' : 'text-gray-500 hover:text-green-600'}`}
                 >
@@ -391,7 +398,7 @@ export const CommunityFeed: React.FC<CommunityFeedProps> = ({ lang, t }) => {
                             <div className="flex items-center gap-1.5">
                                 <span className="font-bold text-sm text-gray-900">{comment.user.name}</span>
                                 {comment.user.isExpert && <BadgeCheckIcon className="w-3 h-3 text-blue-500" />}
-                                <span className="text-xs text-gray-400">• {new Date(comment.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                                <span className="text-xs text-gray-400">- {new Date(comment.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                             </div>
                             <p className="text-sm text-gray-700 mt-0.5">{comment.text}</p>
                           </div>
@@ -410,6 +417,7 @@ export const CommunityFeed: React.FC<CommunityFeedProps> = ({ lang, t }) => {
                     className="flex-grow px-4 py-2 rounded-full border border-gray-200 text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500"
                   />
                   <button 
+                    type="button"
                     onClick={() => handleAddComment(post.id)}
                     disabled={!commentText.trim()}
                     className="text-green-600 font-bold text-sm px-3 hover:bg-green-50 rounded-full disabled:opacity-50 disabled:hover:bg-transparent"
