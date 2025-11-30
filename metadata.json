@@ -1,0 +1,7 @@
+{
+  "name": "BotanAI - Plant Health Expert",
+  "description": "An intelligent plant identification and health diagnosis application powered by Gemini.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
