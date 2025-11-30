@@ -241,7 +241,7 @@ export const CommunityFeed: React.FC<CommunityFeedProps> = ({ lang, t }) => {
         
         <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-gray-600">{t('mod_mode')}</span>
-            <button 
+            <button aria-label="Toggle Moderator Mode"
                 type="button"
                 onClick={() => setIsModMode(!isModMode)}
                 className={`w-12 h-6 rounded-full transition-colors relative ${isModMode ? 'bg-green-600' : 'bg-gray-300'}`}
@@ -331,7 +331,7 @@ export const CommunityFeed: React.FC<CommunityFeedProps> = ({ lang, t }) => {
 
                 {isModMode && (
                   <div className="flex gap-2">
-                    <button 
+                    <button aria-label="Pin Post"
                         type="button"
                         onClick={() => handlePin(post.id)}
                         className={`p-1.5 rounded-full hover:bg-gray-100 ${post.isPinned ? 'text-green-600' : 'text-gray-400'}`}
@@ -339,7 +339,7 @@ export const CommunityFeed: React.FC<CommunityFeedProps> = ({ lang, t }) => {
                     >
                         <PinIcon className="w-5 h-5" filled={post.isPinned} />
                     </button>
-                    <button 
+                    <button aria-label="Delete Post"
                         type="button"
                         onClick={() => handleDelete(post.id)}
                         className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full"
@@ -362,7 +362,7 @@ export const CommunityFeed: React.FC<CommunityFeedProps> = ({ lang, t }) => {
 
               {/* Footer Actions */}
               <div className="flex items-center gap-6 pt-3 border-t border-gray-50">
-                <button 
+                <button aria-label="Like Post"
                   type="button"
                   onClick={() => handleLike(post.id)}
                   className={`flex items-center gap-1.5 text-sm font-medium transition-colors ${post.isLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}`}
@@ -371,7 +371,7 @@ export const CommunityFeed: React.FC<CommunityFeedProps> = ({ lang, t }) => {
                   {post.likes}
                 </button>
                 
-                <button 
+                <button aria-label="Toggle Comments"
                   type="button"
                   onClick={() => setExpandedPostId(expandedPostId === post.id ? null : post.id)}
                   className={`flex items-center gap-1.5 text-sm font-medium transition-colors ${expandedPostId === post.id ? 'text-green-600' : 'text-gray-500 hover:text-green-600'}`}
@@ -416,7 +416,7 @@ export const CommunityFeed: React.FC<CommunityFeedProps> = ({ lang, t }) => {
                     onKeyDown={(e) => e.key === 'Enter' && handleAddComment(post.id)}
                     className="flex-grow px-4 py-2 rounded-full border border-gray-200 text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500"
                   />
-                  <button 
+                  <button aria-label="Post Comment"
                     type="button"
                     onClick={() => handleAddComment(post.id)}
                     disabled={!commentText.trim()}
