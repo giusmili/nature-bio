@@ -68,11 +68,13 @@ function App() {
     setError(null);
     setAnalysis(null);
     setCurrentView('analyze'); // Ensure we are on the analyze view
+    setImage(base64Image);
 
     try {
       const result = await analyzePlantImage(base64Image, lang);
-      setAnalysis(result);
-      setHistory(prev => [result, ...prev]);
+      const itemWithImage = { ...result, image: base64Image };
+      setAnalysis(itemWithImage);
+      setHistory(prev => [itemWithImage, ...prev]);
     } catch (err) {
       setError(t('analyze_error_detail'));
       console.error(err);
@@ -90,7 +92,7 @@ function App() {
   const selectHistoryItem = (item: PlantAnalysis) => {
     setAnalysis(item);
     setCurrentView('analyze');
-    setImage(null); 
+    setImage(item.image ?? null); 
   };
 
   return (

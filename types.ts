@@ -26,6 +26,7 @@ export interface PlantAnalysis {
   treatment: string[]; // Steps to cure
   careInstructions: CareInstructions;
   funFact: string;
+  image?: string; // Base64 image for history recall
 }
 
 export interface PlantHistoryItem {

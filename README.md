@@ -16,3 +16,7 @@
 ## Langages utilisés
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white) ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB) ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)
+
+## Service worker
+
+Un service worker (`public/service-worker.js`) assure une mise en cache simple des pages et assets pour une expérience offline limitée. Il est enregistré automatiquement au chargement de l'application.
