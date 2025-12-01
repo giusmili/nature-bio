@@ -30,7 +30,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ data, image, onReset, t }) 
   const isSick = data.healthStatus === HealthStatus.SICK;
 
   // Prepare share text
-  const shareText = `I just analyzed my ${data.commonName} with BotanAI! Diagnosis: ${data.diagnosis} (${data.healthStatus}). #BotanAI #PlantHealth`;
+  const shareText = `I just analyzed my ${data.commonName} with Botanic! Diagnosis: ${data.diagnosis} (${data.healthStatus}). #Botanic #PlantHealth`;
   const shareUrl = window.location.href; // In a real app, this would be a unique link to the result
 
   const handleShare = (platform: 'twitter' | 'facebook' | 'linkedin' | 'copy') => {

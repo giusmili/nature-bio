@@ -3,7 +3,7 @@ import { Language } from './types';
 
 export const translations = {
   en: {
-    app_title: "BotanAI",
+    app_title: "Botanic",
     scan: "Scan",
     community: "Community",
     history: "History",
@@ -60,7 +60,7 @@ export const translations = {
     Unknown: "Unknown"
   },
   fr: {
-    app_title: "BotanAI",
+    app_title: "Botanic",
     scan: "Scanner",
     community: "Communauté",
     history: "Historique",
