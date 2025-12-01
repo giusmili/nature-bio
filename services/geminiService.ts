@@ -10,7 +10,7 @@ const apiKey =
 // Initialize the client only if we have a key
 const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
-const buildMockAnalysis = (language: Language = "en"): PlantAnalysis => {
+const buildMockAnalysis = (language: Language = "fr"): PlantAnalysis => {
   const isFr = language === "fr";
   return {
     id: crypto.randomUUID(),
@@ -75,7 +75,7 @@ const plantSchema: Schema = {
   required: ["scientificName", "commonName", "confidence", "healthStatus", "diagnosis", "treatment", "careInstructions", "symptoms"]
 };
 
-export const analyzePlantImage = async (base64Image: string, language: Language = 'en'): Promise<PlantAnalysis> => {
+export const analyzePlantImage = async (base64Image: string, language: Language = 'fr'): Promise<PlantAnalysis> => {
   try {
     // Remove header from base64 string if present
     const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|jpg|webp);base64,/, "");

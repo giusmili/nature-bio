@@ -21,7 +21,7 @@ type View = 'analyze' | 'community';
 function App() {
   // State
   const [currentView, setCurrentView] = useState<View>('analyze');
-  const [lang, setLang] = useState<Language>('en');
+  const [lang, setLang] = useState<Language>('fr');
   const [image, setImage] = useState<string | null>(null);
   const [analysis, setAnalysis] = useState<PlantAnalysis | null>(null);
   const [isLoading, setIsLoading] = useState(false);
