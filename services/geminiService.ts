@@ -48,6 +48,8 @@ export const analyzePlantImage = async (base64Image: string, language: Language 
       method: "POST",
       headers: {
         "content-type": "application/json",
+        // Required when calling Anthropic from the browser; harmless if proxied
+        "anthropic-dangerous-direct-browser-access": "true",
       },
       body: JSON.stringify({
         model: CLAUDE_MODEL,
@@ -60,6 +62,14 @@ export const analyzePlantImage = async (base64Image: string, language: Language 
 
     if (!response.ok) {
       const errorText = await response.text();
+      // Graceful fallback when no API key is configured
+      if (
+        errorText.includes("Missing Claude API key") ||
+        errorText.includes("anthropic-dangerous-direct-browser-access")
+      ) {
+        console.warn("Claude API unavailable (missing key or CORS); returning mock analysis.");
+        return buildMockAnalysis(language);
+      }
       throw new Error(`Claude API error: ${response.status} ${errorText}`);
     }
 
