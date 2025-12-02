@@ -98,19 +98,24 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 font-sans selection:bg-green-200 flex flex-col">
       {/* Navigation */}
-      <nav className="bg-white shadow-sm sticky top-0 z-30 flex-shrink-0">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => { setCurrentView('analyze'); resetApp(); }}>
-            <div className="bg-green-600 text-white p-1.5 rounded-lg">
-                <LeafIcon className="w-6 h-6" />
-            </div>
+      <header className="bg-white shadow-sm sticky top-0 z-30 flex-shrink-0">
+        <nav className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between" aria-label="Navigation principale">
+          <button
+            type="button"
+            className="flex items-center gap-2 cursor-pointer"
+            onClick={() => { setCurrentView('analyze'); resetApp(); }}
+          >
+            <span className="bg-green-600 text-white p-1.5 rounded-lg">
+              <LeafIcon className="w-6 h-6" />
+            </span>
             <span className="text-xl font-bold tracking-tight text-green-900 hidden sm:block">{t('app_title')}</span>
-          </div>
+          </button>
           
-          <div className="flex items-center bg-gray-100 rounded-full p-1 gap-1">
+          <div className="flex items-center bg-gray-100 rounded-full p-1 gap-1" role="group" aria-label="Changement de vue">
              <button 
                 onClick={() => setCurrentView('analyze')}
                 className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all flex items-center gap-2 ${currentView === 'analyze' ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                aria-pressed={currentView === 'analyze'}
              >
                 <CameraIcon className="w-4 h-4" />
                 <span className="hidden sm:inline">{t('scan')}</span>
@@ -118,6 +123,7 @@ function App() {
              <button 
                 onClick={() => setCurrentView('community')}
                 className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all flex items-center gap-2 ${currentView === 'community' ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                aria-pressed={currentView === 'community'}
              >
                 <UsersIcon className="w-4 h-4" />
                 <span className="hidden sm:inline">{t('community')}</span>
@@ -135,34 +141,45 @@ function App() {
               onClick={() => setIsHistoryOpen(true)}
               className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-full transition-colors"
               title={t('history')}
+              aria-label={t('history')}
             >
               <HistoryIcon className="w-6 h-6" />
             </button>
           </div>
-        </div>
-      </nav>
+        </nav>
+      </header>
 
       {/* Main Content */}
-      <main className="max-w-5xl mx-auto px-4 py-8 flex-grow w-full">
+      <main className="max-w-5xl mx-auto px-4 py-8 flex-grow w-full" id="contenu-principal">
         
         {currentView === 'community' ? (
-           <CommunityFeed lang={lang} t={t} />
+           <section aria-label={t('community')}>
+             <CommunityFeed lang={lang} t={t} />
+           </section>
         ) : (
           <>
             {/* State: Error */}
             {error && (
-              <div className="max-w-md mx-auto mb-8 bg-red-50 border-l-4 border-red-500 p-4 rounded-r shadow-sm flex justify-between items-center">
+              <section
+                role="alert"
+                aria-live="assertive"
+                className="max-w-md mx-auto mb-8 bg-red-50 border-l-4 border-red-500 p-4 rounded-r shadow-sm flex justify-between items-center"
+              >
                 <div>
                     <p className="font-bold text-red-700">{t('analyze_error')}</p>
                     <p className="text-sm text-red-600">{error}</p>
                 </div>
                 <button onClick={resetApp} className="text-red-700 font-bold text-sm hover:underline">{t('retry')}</button>
-              </div>
+              </section>
             )}
 
             {/* State: Loading */}
             {isLoading && (
-              <div className="flex flex-col items-center justify-center py-20 animate-fade-in">
+              <section
+                role="status"
+                aria-live="polite"
+                className="flex flex-col items-center justify-center py-20 animate-fade-in"
+              >
                 <div className="relative">
                     <div className="w-20 h-20 border-4 border-gray-200 rounded-full"></div>
                     <div className="w-20 h-20 border-4 border-green-500 rounded-full border-t-transparent animate-spin absolute top-0 left-0"></div>
@@ -170,26 +187,33 @@ function App() {
                 </div>
                 <h2 className="mt-8 text-2xl font-bold text-gray-800">{t('examining')}</h2>
                 <p className="text-gray-500 mt-2">{t('examining_desc')}</p>
-              </div>
+              </section>
             )}
 
             {/* State: Results */}
             {!isLoading && analysis && (
-                <AnalysisView data={analysis} image={image} onReset={resetApp} t={t} />
+                <section aria-label="Analyse de la plante">
+                  <AnalysisView data={analysis} image={image} onReset={resetApp} t={t} />
+                </section>
             )}
 
             {/* State: Idle (Upload) */}
             {!isLoading && !analysis && (
-              <div className="max-w-xl mx-auto text-center animate-fade-in pt-10">
-                <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6 tracking-tight">
-                  {t('hero_title')} <br/>
-                  <span className="text-green-600">{t('hero_subtitle')}</span>
-                </h1>
-                <p className="text-lg text-gray-600 mb-10 leading-relaxed">
-                  {t('hero_desc')}
-                </p>
+              <section
+                aria-labelledby="hero-title"
+                className="max-w-xl mx-auto text-center animate-fade-in pt-10"
+              >
+                <header>
+                  <h1 id="hero-title" className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6 tracking-tight">
+                    {t('hero_title')} <br/>
+                    <span className="text-green-600">{t('hero_subtitle')}</span>
+                  </h1>
+                  <p className="text-lg text-gray-600 mb-10 leading-relaxed">
+                    {t('hero_desc')}
+                  </p>
+                </header>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4" role="group" aria-label="Actions de chargement d'image">
                   {/* Camera Action */}
                   <label className="group relative flex flex-col items-center justify-center p-8 border-2 border-dashed border-green-300 rounded-2xl cursor-pointer hover:bg-green-50 hover:border-green-500 transition-all duration-300 bg-white shadow-sm">
                       <input 
@@ -222,7 +246,7 @@ function App() {
                   </label>
                 </div>
 
-                <div className="mt-12 grid grid-cols-3 gap-4 text-center">
+                <section className="mt-12 grid grid-cols-3 gap-4 text-center" aria-label="Points forts">
                     <div>
                         <div className="bg-white rounded-full w-12 h-12 flex items-center justify-center mx-auto shadow-sm mb-3 text-green-600">
                             <LeafIcon />
@@ -241,15 +265,15 @@ function App() {
                         </div>
                         <p className="text-sm font-semibold text-gray-700">{t('care_guides')}</p>
                     </div>
-                </div>
-              </div>
+                </section>
+              </section>
             )}
           </>
         )}
       </main>
 
       {/* Footer */}
-      <footer className="py-6 text-center text-gray-400 text-sm font-medium border-t border-gray-100 bg-white">
+      <footer className="py-6 text-center text-gray-400 text-sm font-medium border-t border-gray-100 bg-white" aria-label="Pied de page">
         &copy; Giusmili 2025
       </footer>
 
