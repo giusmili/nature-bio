@@ -16,6 +16,71 @@ import {
   UsersIcon
 } from './components/Icons';
 
+type LegalModalProps = {
+  open: boolean;
+  onClose: () => void;
+};
+
+function LegalModal({ open, onClose }: LegalModalProps) {
+  if (!open) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="legal-title"
+    >
+      <div className="bg-white max-w-lg w-full rounded-2xl shadow-xl p-6 space-y-4">
+        <header className="flex items-center justify-between">
+          <h2 id="legal-title" className="text-xl font-bold text-gray-900">
+            Mentions legales & RGPD
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-800"
+            aria-label="Fermer"
+          >
+            ×
+          </button>
+        </header>
+
+        <section className="space-y-3 text-sm text-gray-700 leading-relaxed">
+          <p>
+            Cette application analyse une photo de plante pour fournir un diagnostic.
+          </p>
+          <ul className="list-disc list-inside space-y-1">
+            <li>
+              Les images peuvent etre envoyees a l'API Google Gemini uniquement si une cle est configuree; sinon une analyse fictive locale est utilisee.
+            </li>
+            <li>
+              L'historique des analyses est enregistre uniquement sur votre appareil via localStorage; aucune base de donnees externe n'est utilisee.
+            </li>
+            <li>
+              Aucun cookie ou suivi tiers n'est implante par l'application.
+            </li>
+            <li>
+              Vous pouvez vider l'historique en effacant les donnees du site dans votre navigateur ou en reinitialisant l'application.
+            </li>
+          </ul>
+          <p>
+            Pour toute demande liee a la vie privee, utilisez votre canal de contact editeur habituel (email ou formulaire).
+          </p>
+        </section>
+
+        <div className="flex justify-end">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+          >
+            Fermer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 type View = 'analyze' | 'community';
 
 function App() {
@@ -28,6 +93,7 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<PlantAnalysis[]>([]);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isLegalOpen, setIsLegalOpen] = useState(false);
 
   // Translation helper
   const t = (key: TranslationKey) => translations[lang][key];
@@ -274,7 +340,16 @@ function App() {
 
       {/* Footer */}
       <footer className="py-6 text-center text-gray-400 text-sm font-medium border-t border-gray-100 bg-white" aria-label="Pied de page">
-        &copy; Giusmili 2025
+        <div className="flex items-center justify-center gap-4">
+          <span>&copy; Giusmili 2025</span>
+          <button
+            className="text-green-700 hover:underline font-semibold"
+            onClick={() => setIsLegalOpen(true)}
+            aria-label="Mentions legales et RGPD"
+          >
+            Mentions legales / RGPD
+          </button>
+        </div>
       </footer>
 
       {/* Sidebar */}
@@ -285,6 +360,7 @@ function App() {
         onSelect={selectHistoryItem}
         t={t}
       />
+      <LegalModal open={isLegalOpen} onClose={() => setIsLegalOpen(false)} />
     </div>
   );
 }
