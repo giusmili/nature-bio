@@ -21,6 +21,39 @@ type LegalModalProps = {
   onClose: () => void;
 };
 
+// Helpers to ensure images from mobile (HEIC/HEIF) are usable as JPEG
+const readAsDataUrl = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+const normalizeToJpeg = async (file: File) => {
+  const base64 = await readAsDataUrl(file);
+  const mimeMatch = base64.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,/);
+  const mime = mimeMatch?.[1] || file.type;
+  const alreadyWebFriendly = ['image/jpeg', 'image/png', 'image/webp'].includes(mime);
+  if (alreadyWebFriendly) return base64;
+
+  // Convert HEIC/HEIF/etc to JPEG via canvas so <img> and API accept it
+  return await new Promise<string>((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return reject(new Error('Canvas context missing'));
+      ctx.drawImage(img, 0, 0);
+      resolve(canvas.toDataURL('image/jpeg', 0.92));
+    };
+    img.onerror = reject;
+    img.src = base64;
+  });
+};
+
 function LegalModal({ open, onClose }: LegalModalProps) {
   if (!open) return null;
 
@@ -112,20 +145,28 @@ function App() {
 
   // Save history on update
   useEffect(() => {
-    localStorage.setItem('botanai_history', JSON.stringify(history));
+    try {
+      localStorage.setItem('botanai_history', JSON.stringify(history));
+    } catch (e) {
+      console.error("Failed to save history", e);
+    }
   }, [history]);
 
   // Handlers
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64 = reader.result as string;
-        setImage(base64);
-        handleAnalyze(base64);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+    try {
+      const normalized = await normalizeToJpeg(file);
+      setImage(normalized);
+      handleAnalyze(normalized);
+    } catch (e) {
+      console.error('Image load failed', e);
+      setError(t('analyze_error_detail'));
+      setIsLoading(false);
+    } finally {
+      // Reset the input to allow re-uploading the same file if needed
+      event.target.value = '';
     }
   };
 

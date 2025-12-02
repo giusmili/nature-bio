@@ -2,6 +2,12 @@
 import { GoogleGenAI, Type, Schema } from "@google/genai";
 import { PlantAnalysis, HealthStatus, Language } from "../types";
 
+const extractMime = (base64: string) =>
+  base64.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,/)?.[1] || "image/jpeg";
+
+const stripHeader = (base64: string) =>
+  base64.replace(/^data:image\/[a-zA-Z0-9.+-]+;base64,/, "");
+
 const apiKey =
   (import.meta as any).env?.VITE_GEMINI_API_KEY ||
   process.env.GEMINI_API_KEY ||
@@ -77,8 +83,8 @@ const plantSchema: Schema = {
 
 export const analyzePlantImage = async (base64Image: string, language: Language = 'fr'): Promise<PlantAnalysis> => {
   try {
-    // Remove header from base64 string if present
-    const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|jpg|webp);base64,/, "");
+    const mimeType = extractMime(base64Image);
+    const cleanBase64 = stripHeader(base64Image);
 
     const langInstruction = language === 'fr' 
       ? "Analyze in French. Return JSON string values in French (commonName, diagnosis, symptoms, treatment, careInstructions, funFact), EXCEPT for 'healthStatus' which MUST strictly be one of ['Healthy', 'Sick', 'Unknown'] (do not translate the enum value)." 
@@ -97,7 +103,7 @@ export const analyzePlantImage = async (base64Image: string, language: Language 
         parts: [
           {
             inlineData: {
-              mimeType: "image/jpeg",
+              mimeType,
               data: cleanBase64,
             },
           },
