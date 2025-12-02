@@ -179,6 +179,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ data, image, onReset, t }) 
             type="button"
             onClick={onReset}
             className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white rounded-full font-semibold shadow-lg transform transition hover:scale-105 active:scale-95 flex items-center gap-2"
+            aria-label={t('scan_another')}
         >
             <CameraIcon className="w-5 h-5" />
             {t('scan_another')}

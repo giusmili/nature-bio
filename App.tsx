@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { analyzePlantImage } from './services/geminiService';
 import { PlantAnalysis, Language } from './types';
@@ -6,12 +5,13 @@ import AnalysisView from './components/AnalysisView';
 import HistorySidebar from './components/HistorySidebar';
 import { CommunityFeed } from './components/CommunityFeed';
 import { translations, TranslationKey } from './translations';
-import { 
-  CameraIcon, 
-  UploadIcon, 
-  LeafIcon, 
-  HistoryIcon, 
-  AlertIcon, 
+
+import {
+  CameraIcon,
+  UploadIcon,
+  LeafIcon,
+  HistoryIcon,
+  AlertIcon,
   WaterIcon,
   UsersIcon
 } from './components/Icons';
@@ -67,14 +67,14 @@ function LegalModal({ open, onClose }: LegalModalProps) {
       <div className="bg-white max-w-lg w-full rounded-2xl shadow-xl p-6 space-y-4">
         <header className="flex items-center justify-between">
           <h2 id="legal-title" className="text-xl font-bold text-gray-900">
-            Mentions legales & RGPD
+            Mentions légales & RGPD
           </h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-800"
-            aria-label="Fermer"
+            aria-label="Fermer la fenêtre des mentions légales"
           >
-            ×
+            x
           </button>
         </header>
 
@@ -84,7 +84,7 @@ function LegalModal({ open, onClose }: LegalModalProps) {
           </p>
           <ul className="list-disc list-inside space-y-1">
             <li>
-              Les images peuvent etre envoyees a l'API Google Gemini uniquement si une cle est configuree; sinon une analyse fictive locale est utilisee.
+              Les images peuvent etre envoyees a l'API (via votre cle) ; sinon une analyse fictive locale est utilisee.
             </li>
             <li>
               L'historique des analyses est enregistre uniquement sur votre appareil via localStorage; aucune base de donnees externe n'est utilisee.
@@ -105,6 +105,7 @@ function LegalModal({ open, onClose }: LegalModalProps) {
           <button
             onClick={onClose}
             className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            aria-label="Fermer"
           >
             Fermer
           </button>
@@ -165,7 +166,6 @@ function App() {
       setError(t('analyze_error_detail'));
       setIsLoading(false);
     } finally {
-      // Reset the input to allow re-uploading the same file if needed
       event.target.value = '';
     }
   };
@@ -174,7 +174,7 @@ function App() {
     setIsLoading(true);
     setError(null);
     setAnalysis(null);
-    setCurrentView('analyze'); // Ensure we are on the analyze view
+    setCurrentView('analyze');
     setImage(base64Image);
 
     try {
@@ -204,13 +204,13 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 font-sans selection:bg-green-200 flex flex-col">
-      {/* Navigation */}
       <header className="bg-white shadow-sm sticky top-0 z-30 flex-shrink-0">
         <nav className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between" aria-label="Navigation principale">
           <button
             type="button"
             className="flex items-center gap-2 cursor-pointer"
             onClick={() => { setCurrentView('analyze'); resetApp(); }}
+            aria-label={t('app_title')}
           >
             <span className="bg-green-600 text-white p-1.5 rounded-lg">
               <LeafIcon className="w-6 h-6" />
@@ -218,29 +218,36 @@ function App() {
             <span className="text-xl font-bold tracking-tight text-green-900 hidden sm:block">{t('app_title')}</span>
           </button>
           
-          <div className="flex items-center bg-gray-100 rounded-full p-1 gap-1" role="group" aria-label="Changement de vue">
-             <button 
-                onClick={() => setCurrentView('analyze')}
-                className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all flex items-center gap-2 ${currentView === 'analyze' ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                aria-pressed={currentView === 'analyze'}
-             >
-                <CameraIcon className="w-4 h-4" />
-                <span className="hidden sm:inline">{t('scan')}</span>
-             </button>
-             <button 
-                onClick={() => setCurrentView('community')}
-                className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all flex items-center gap-2 ${currentView === 'community' ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                aria-pressed={currentView === 'community'}
-             >
-                <UsersIcon className="w-4 h-4" />
-                <span className="hidden sm:inline">{t('community')}</span>
-             </button>
+          <div className="flex items-center bg-gray-100 rounded-full p-1 gap-1" role="tablist" aria-label="Changement de vue">
+            <button 
+              onClick={() => setCurrentView('analyze')}
+              className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all flex items-center gap-2 ${currentView === 'analyze' ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+              role="tab"
+              aria-selected={currentView === 'analyze'}
+              aria-controls="analyze-panel"
+              aria-label={t('scan')}
+            >
+              <CameraIcon className="w-4 h-4" />
+              <span className="hidden sm:inline">{t('scan')}</span>
+            </button>
+            <button 
+              onClick={() => setCurrentView('community')}
+              className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all flex items-center gap-2 ${currentView === 'community' ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+              role="tab"
+              aria-selected={currentView === 'community'}
+              aria-controls="community-panel"
+              aria-label={t('community')}
+            >
+              <UsersIcon className="w-4 h-4" />
+              <span className="hidden sm:inline">{t('community')}</span>
+            </button>
           </div>
 
           <div className="flex items-center gap-2">
             <button 
               onClick={() => setLang(lang === 'en' ? 'fr' : 'en')}
               className="px-2 py-1 text-sm font-bold text-green-700 border border-green-200 rounded hover:bg-green-50 uppercase"
+              aria-label="Changer de langue"
             >
               {lang}
             </button>
@@ -256,16 +263,14 @@ function App() {
         </nav>
       </header>
 
-      {/* Main Content */}
       <main className="max-w-5xl mx-auto px-4 py-8 flex-grow w-full" id="contenu-principal">
         
         {currentView === 'community' ? (
-           <section aria-label={t('community')}>
+           <section id="community-panel" aria-label={t('community')}>
              <CommunityFeed lang={lang} t={t} />
            </section>
         ) : (
-          <>
-            {/* State: Error */}
+          <section id="analyze-panel" aria-label={t('scan')}>
             {error && (
               <section
                 role="alert"
@@ -276,11 +281,10 @@ function App() {
                     <p className="font-bold text-red-700">{t('analyze_error')}</p>
                     <p className="text-sm text-red-600">{error}</p>
                 </div>
-                <button onClick={resetApp} className="text-red-700 font-bold text-sm hover:underline">{t('retry')}</button>
+                <button onClick={resetApp} className="text-red-700 font-bold text-sm hover:underline" aria-label={t('retry')}>{t('retry')}</button>
               </section>
             )}
 
-            {/* State: Loading */}
             {isLoading && (
               <section
                 role="status"
@@ -297,14 +301,12 @@ function App() {
               </section>
             )}
 
-            {/* State: Results */}
             {!isLoading && analysis && (
                 <section aria-label="Analyse de la plante">
                   <AnalysisView data={analysis} image={image} onReset={resetApp} t={t} />
                 </section>
             )}
 
-            {/* State: Idle (Upload) */}
             {!isLoading && !analysis && (
               <section
                 aria-labelledby="hero-title"
@@ -321,7 +323,6 @@ function App() {
                 </header>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4" role="group" aria-label="Actions de chargement d'image">
-                  {/* Camera Action */}
                   <label className="group relative flex flex-col items-center justify-center p-8 border-2 border-dashed border-green-300 rounded-2xl cursor-pointer hover:bg-green-50 hover:border-green-500 transition-all duration-300 bg-white shadow-sm">
                       <input 
                         type="file" 
@@ -329,6 +330,7 @@ function App() {
                         capture="environment"
                         className="hidden" 
                         onChange={handleImageUpload}
+                        aria-label={t('take_photo')}
                       />
                       <div className="bg-green-100 text-green-600 p-4 rounded-full mb-4 group-hover:scale-110 transition-transform">
                         <CameraIcon className="w-8 h-8" />
@@ -337,13 +339,13 @@ function App() {
                       <span className="text-sm text-gray-500 mt-1">{t('use_camera')}</span>
                   </label>
 
-                  {/* Upload Action */}
                   <label className="group relative flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-300 rounded-2xl cursor-pointer hover:bg-gray-50 hover:border-gray-500 transition-all duration-300 bg-white shadow-sm">
                       <input 
                         type="file" 
                         accept="image/*" 
                         className="hidden" 
                         onChange={handleImageUpload}
+                        aria-label={t('upload_image')}
                       />
                       <div className="bg-gray-100 text-gray-600 p-4 rounded-full mb-4 group-hover:scale-110 transition-transform">
                         <UploadIcon className="w-8 h-8" />
@@ -375,25 +377,23 @@ function App() {
                 </section>
               </section>
             )}
-          </>
+          </section>
         )}
       </main>
 
-      {/* Footer */}
       <footer className="py-6 text-center text-gray-400 text-sm font-medium border-t border-gray-100 bg-white" aria-label="Pied de page">
         <div className="flex items-center justify-center gap-4">
           <span>&copy; Giusmili 2025</span>
           <button
             className="text-green-700 hover:underline font-semibold"
             onClick={() => setIsLegalOpen(true)}
-            aria-label="Mentions legales et RGPD"
+            aria-label="Mentions légales et RGPD"
           >
-            Mentions legales / RGPD
+            Mentions légales / RGPD
           </button>
         </div>
       </footer>
 
-      {/* Sidebar */}
       <HistorySidebar 
         history={history} 
         isOpen={isHistoryOpen} 
