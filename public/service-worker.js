@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nature-bio-cache-v1';
+const CACHE_NAME = 'nature-bio-cache-v3';
 const OFFLINE_URLS = ['/', '/index.html'];
 
 self.addEventListener('install', (event) => {
@@ -23,25 +23,33 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const { request } = event;
-  if (
-    request.method !== 'GET' ||
-    request.cache === 'only-if-cached' ||
-    new URL(request.url).origin !== self.location.origin
-  ) {
-    return;
-  }
+  if (request.method !== 'GET') return;
+
+  const { origin } = new URL(request.url);
+  if (origin !== self.location.origin || request.cache === 'only-if-cached') return;
+
+  const wantsHTML = request.headers.get('accept')?.includes('text/html');
 
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      if (cachedResponse) return cachedResponse;
+    (async () => {
+      try {
+        const networkResponse = await fetch(request);
+        if (networkResponse && networkResponse.ok) {
+          const cache = await caches.open(CACHE_NAME);
+          cache.put(request, networkResponse.clone());
+        }
+        return networkResponse;
+      } catch (error) {
+        const cached = await caches.match(request);
+        if (cached) return cached;
 
-      return fetch(request) 
-        .then((networkResponse) => {
-          const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, responseClone));
-          return networkResponse;
-        })
-        .catch(() => cachedResponse);
-    })
+        if (wantsHTML) {
+          const offline = await caches.match('/index.html');
+          if (offline) return offline;
+        }
+
+        return Response.error();
+      }
+    })()
   );
 });
