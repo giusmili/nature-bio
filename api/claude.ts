@@ -1,5 +1,4 @@
 // api/claude.ts
-// almost there
 
 export default {
     // Vercel Node.js runtime: fetch-style handler
