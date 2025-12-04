@@ -30,29 +30,65 @@ const readAsDataUrl = (file: File) =>
         reader.readAsDataURL(file)
     })
 
-const normalizeToJpeg = async (file: File) => {
-    const base64 = await readAsDataUrl(file)
-    const mimeMatch = base64.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,/)
-    const mime = mimeMatch?.[1] || file.type
-    const alreadyWebFriendly = ['image/jpeg', 'image/png', 'image/webp'].includes(mime)
-    if (alreadyWebFriendly) return base64
+const estimateBase64SizeBytes = (dataUrl: string) => {
+  const base64 = dataUrl.split(',')[1] ?? '';
+  // longueur base64 * 3/4 ≈ bytes réels
+  return Math.ceil(base64.length * 3 / 4);
+};
 
-    // Convert HEIC/HEIF/etc to JPEG via canvas so <img> and API accept it
-    return await new Promise<string>((resolve, reject) => {
-        const img = new Image()
-        img.onload = () => {
-            const canvas = document.createElement('canvas')
-            canvas.width = img.width
-            canvas.height = img.height
-            const ctx = canvas.getContext('2d')
-            if (!ctx) return reject(new Error('Canvas context missing'))
-            ctx.drawImage(img, 0, 0)
-            resolve(canvas.toDataURL('image/jpeg', 0.92))
+const MAX_BYTES = 2 * 1024 * 1024; // 2 MB pour être tranquille avec Vercel + Anthropic
+const MAX_DIMENSION = 1600;        // max width/height si on doit réduire
+
+const normalizeToJpeg = async (file: File) => {
+  const base64 = await readAsDataUrl(file);
+
+  return await new Promise<string>((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      let width = img.width;
+      let height = img.height;
+
+      // 1) première passe : voir si l'image brute est déjà "petite"
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return reject(new Error('Canvas context missing'));
+      ctx.drawImage(img, 0, 0, width, height);
+
+      let output = canvas.toDataURL('image/jpeg', 0.8);
+      let sizeBytes = estimateBase64SizeBytes(output);
+
+      console.log('Taille initiale ~', (sizeBytes / 1024 / 1024).toFixed(2), 'MB');
+
+      // 2) si trop gros → on réduit dimensions + qualité
+      if (sizeBytes > MAX_BYTES || width > MAX_DIMENSION || height > MAX_DIMENSION) {
+        // recalculer dimensions
+        if (width > height && width > MAX_DIMENSION) {
+          height = (height * MAX_DIMENSION) / width;
+          width = MAX_DIMENSION;
+        } else if (height >= width && height > MAX_DIMENSION) {
+          width = (width * MAX_DIMENSION) / height;
+          height = MAX_DIMENSION;
         }
-        img.onerror = reject
-        img.src = base64
-    })
-}
+
+        canvas.width = Math.round(width);
+        canvas.height = Math.round(height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        // baisser encore un peu la qualité
+        output = canvas.toDataURL('image/jpeg', 0.7);
+        sizeBytes = estimateBase64SizeBytes(output);
+        console.log('Taille après resize ~', (sizeBytes / 1024 / 1024).toFixed(2), 'MB');
+      }
+
+      resolve(output);
+    };
+    img.onerror = reject;
+    img.src = base64;
+  });
+};
 
 function LegalModal({ open, onClose }: LegalModalProps) {
     if (!open) return null
